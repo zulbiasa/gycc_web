@@ -1,43 +1,48 @@
 <style>
-        
-
-        /* Account & Logout Section */
-
+        .content {
+                    margin-left: 250px; /* Adjust content to the right of the sidebar */
+                    padding: 20px;
+                    height: 100vh; /* Ensure content stretches */
+                    overflow-y: auto; /* Scrollable content */
+        }
         .account-logout-container {
             position: absolute;
-        bottom: 3vh; /* Adjust this value to control how far up it is from the bottom */
-        left: 0;
-        width: 100%;
-        display:contents}
+            bottom: 3vh; /* Adjust this value to control how far up it is from the bottom */
+            left: 0;
+            width: 100%;
+            display:contents 
+        }
 
         .close-btn {
-        display: none;
-        text-align: right;
-        padding: 10px;
-        cursor: pointer;
+            display: none;
+            text-align: right;
+            padding: 10px;
+            cursor: pointer;
         }
 
         @media (max-width: 768px) {
-        .close-btn {
-            display: block;
-        }
+            .close-btn {
+                display: block;
+                
+            }
 
-        .sidebar {
-            transform: translateX(-100%);
-            transition: transform 0.3s;
-        }
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+                background: linear-gradient(135deg, #0056b3, #007bff);
+            }
 
-        .sidebar.open {
-            transform: translateX(0);
-        }
+            .sidebar.open {
+                transform: translateX(0);
+            }
 
-        @media (max-height: 600px) {
-    .account-logout-container {
-        bottom: 5vh; /* Adjust for shorter viewports */
-    }
-}
-        
-    }
+            @media (max-height: 600px) {
+                .account-logout-container {
+                    bottom: 2vh; /* Adjust for shorter viewports */
+                }
+            }   
+        }
+            
 
     </style>
 
@@ -47,7 +52,7 @@
     </div>
 
     <!-- Logo Can Click -->
-    <a href="/dashboard" style="text-decoration: none;">
+    <a href="/aboutus" style="text-decoration: none;">
         <div class="sidebar-logo">GYCC+</div>
     </a>
 
@@ -60,10 +65,12 @@
         <a href="#" class="nav-link" onclick="toggleMenu('user-management-links')">
             <i class="fa fa-users"></i> User Management
         </a>
+
         <div id="user-management-links" class="child-links">
-            <a href="{{ route('users.selectRole') }}">Register</a>
-            <a href="#">Update</a>
-            <a href="#">View</a>
+            <a href="{{ route('users.view') }}">View</a>
+            <a href="{{ route('users.create') }}">Register</a>
+            <!-- <a href="#">Update</a> -->
+           
         </div>
 
         <!-- Service Management -->
@@ -77,13 +84,13 @@
         </div>
 
         <!-- Care Plan -->
-        <a href="#" class="nav-link" onclick="toggleMenu('care-plan-links')">
+        <a href="{{ route('careplan.index') }}" class="nav-link" onclick="toggleMenu('care-plan-links')">
             <i class="fa fa-heartbeat"></i> Care Plan
         </a>
-        <div id="care-plan-links" class="child-links">
+        <!-- <div id="care-plan-links" class="child-links">
             <a href="careplan">View</a>
             <a href="#">Update</a>
-        </div>
+        </div> -->
     @endif
 
     <!-- Caregiver Sidebar -->
@@ -93,35 +100,32 @@
             <i class="fa fa-user"></i> Client Management
         </a>
         <div id="client-management-links" class="child-links">
-            <a href="#">Register</a>
-            <a href="#">View</a>
+            <a href="{{ route('register') }}">Register</a>
+            <a href="{{ route('viewClient') }}">View</a>
         </div>
+
+    
 
         <!-- Care Plan -->
         <a href="#" class="nav-link" onclick="toggleMenu('care-plan-caregiver-links')">
             <i class="fa fa-heart"></i> Care Plan
         </a>
         <div id="care-plan-caregiver-links" class="child-links">
-            <a href="#">Register</a>
-            <a href="careplan">View</a>
-            <a href="#">Update</a>
+            <a href="{{ route('registerCarePlan') }}">Register</a>
+            <a href="{{ route('viewCarePlan') }}">View</a>
+            <!--<a href="#">Update</a>-->
         </div>
 
         <!-- Task Management -->
-        <a href="#" class="nav-link" onclick="toggleMenu('task-management-links')">
+        <a href="{{ route('careLog') }}" class="nav-link">
             <i class="fa fa-tasks"></i> Task Management
         </a>
-        <div id="task-management-links" class="child-links">
-            <a href="#">View</a>
-            <a href="#">Update</a>
-            <a href="#">Add New</a>
-            <a href="#">Reminder</a>
-        </div>
-    @endif
+    @endif  
 
         <!-- Account and Logout Section -->
         <div class="account-logout-container">
-            <a href="#" class="nav-link account-link">
+            
+            <a href="{{ route('myaccount.view') }}" class="nav-link account-link">
                 <i class="fa fa-user-circle"></i> Account
             </a>
 

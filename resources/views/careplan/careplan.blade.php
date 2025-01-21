@@ -4,102 +4,239 @@
 
 @section('content')
 <style>
-.table-container {
-    width: 100%;
-    margin: 20px auto;
-    padding: 20px;
-    background: #f5f5f5;
+/* Filter Bar Styles */
+.filter-bar {
+    margin-bottom: 20px;
+    background-color: #f8f9fa;
+    padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.table-controls {
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-}
-
-.search-box {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    flex: 1;
-}
-
-.table-custom {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    text-align: center;
-}
-
-.table-custom th,
-.table-custom td {
-    padding: 12px;
     border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.table-custom th.sortable {
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 150px;
+}
+
+.form-group label {
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+}
+
+.form-control {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 14px;
     cursor: pointer;
-    position: relative;
-    user-select: none;
+    transition: all 0.3s ease;
 }
 
-.table-custom th.sortable:after {
-    content: '⇅';
-    font-size: 12px;
-    color: black;
-    position: absolute;
-    right: 10px;
-}
-
-.table-custom thead tr {
+.btn-primary {
     background-color: #007bff;
+    border: none;
     color: white;
 }
 
-.table-custom tbody tr:nth-child(even) {
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+/* Table Styles */
+.table-container {
+    margin-top: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+}
+
+.table-container th,
+.table-container td {
+    padding: 10px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.table-container thead th {
+    background-color: #003366;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.table-container tbody tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-.table-custom tbody tr:hover {
-    background-color: #f1f1f1;
+.table-container tbody tr:hover {
+    background-color: rgb(203, 231, 255);
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.status-badge.active {
+    background-color: #28a745;
+    color: white;
+}
+
+.status-badge.inactive {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Action Buttons */
+.action-btn {
+    border: none;
+    background: none;
+    color: #007bff;
+    font-size: 18px;
     cursor: pointer;
+    margin-right: 10px;
+    transition: color 0.3s ease, transform 0.2s ease;
 }
 
-.icon-btn i {
-    font-size: 16px;
-    cursor: pointer;
+.action-btn:hover {
+    color: #0056b3;
+    transform: scale(1.2);
 }
 
-.icon-btn[title="View"] i {
-    color: #28a745;
-}
-
-.icon-btn[title="Edit"] i {
-    color: #ffc107;
-}
-
-.icon-btn[title="Delete"] i {
+.action-btn.delete {
     color: #dc3545;
+}
+
+.action-btn.delete:hover {
+    color: #a71d2a;
 }
 </style>
 
+<!-- Filter Form -->
+<div class="filter-bar">
+    <form action="{{ route('careplan.index') }}" method="GET" class="filter-form">
+        <div class="filter-row">
+            <div class="form-group compact-search-by"  style="flex: 0 0 15%;">
+                <label for="searchBy">Search:</label>
+                <select name="searchBy" id="searchBy" class="form-control compact-select">
+                    <option value="clientName" {{ $searchBy === 'clientName' ? 'selected' : '' }}>Client Name</option>
+                    <option value="caregiverName" {{ $searchBy === 'caregiverName' ? 'selected' : '' }}>Caregiver Name</option>
+                    <!-- <option value="status" {{ $searchBy === 'status' ? 'selected' : '' }}>Status</option> -->
+                </select>
+            </div>
+
+            <!-- Client Name Filter -->
+            <div class="form-group" id="clientNameFilter" style="{{ $searchBy === 'clientName' ? '' : 'display: none;' }}">
+                <label for="clientName">Client Name:</label>
+                <input type="text" name="clientName" id="clientName" class="form-control" placeholder="Enter Client Name" value="{{ $selectedClientName }}">
+            </div>
+
+            <!-- Caregiver Name Filter -->
+            <div class="form-group" id="caregiverNameFilter" style="{{ $searchBy === 'caregiverName' ? '' : 'display: none;' }}">
+                <label for="caregiverName">Caregiver Name:</label>
+                <input type="text" name="caregiverName" id="caregiverName" class="form-control" placeholder="Enter Caregiver Name" value="{{ $selectedCaregiverName }}">
+            </div>
+
+            <!-- Status Filter -->
+            <div class="form-group" id="statusFilter" style="{{ $searchBy === 'status' ? '' : 'display: none;' }}">
+                <label for="status">Status:</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="">-- Select Status --</option>
+                    <option value="Active" {{ $selectedStatus === 'Active' ? 'selected' : '' }}>Active</option>
+                    <option value="Inactive" {{ $selectedStatus === 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="filter-buttons">
+            <button type="submit" class="btn btn-primary">Filter</button>
+            <a href="{{ route('careplan.index') }}" class="btn btn-secondary">Clear</a>
+            <a href="{{ route('careplan.index', ['view' => isset($view) && $view === 'history' ? 'active' : 'history']) }}" 
+                class="btn"
+                style="
+                    background-color: {{ isset($view) && $view === 'history' ? '#ffcc80' : '#c8e6c9' }};
+                    color: {{ isset($view) && $view === 'history' ? '#6d4c41' : '#2e7d32' }};
+                    font-weight: bold; 
+                    border: none; 
+                    padding: 10px 20px; 
+                    text-transform: uppercase; 
+                    transition: all 0.3s ease;"
+                onmouseover="this.style.backgroundColor='{{ isset($view) && $view === 'history' ? '#ffb74d' : '#a5d6a7' }}'; this.style.color='#000';"
+                onmouseout="this.style.backgroundColor='{{ isset($view) && $view === 'history' ? '#ffcc80' : '#c8e6c9' }}'; this.style.color='{{ isset($view) && $view === 'history' ? '#6d4c41' : '#2e7d32' }}';">
+                    {{ isset($view) && $view === 'history' ? 'View Care Plan' : 'Care Plan History' }}
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Care Plan Table -->
 <div class="table-container">
-    <div class="table-controls">
-        <input type="text" id="searchBox" class="search-box" placeholder="Search by Client or Caregiver">
-    </div>
-    <table class="table-custom" id="carePlanTable">
+    <table id="carePlanTable">
         <thead>
             <tr>
-                <th onclick="sortTable(0)" class="sortable">Client</th>
-                <th onclick="sortTable(1)" class="sortable">Care Plan Type</th>
-                <th onclick="sortTable(2)" class="sortable">Plan Start</th>
-                <th onclick="sortTable(3)" class="sortable">Plan End</th>
-                <th onclick="sortTable(4)" class="sortable">Status</th>
-                <th onclick="sortTable(5)" class="sortable">Total Services</th>
-                <th onclick="sortTable(6)" class="sortable">Assigned Caregiver</th>
+                <th>Client</th>
+                <th>Care Plan Type</th>
+                <th>Plan Start</th>
+                <th>Plan End</th>
+                <th>Status</th>
+                <th>Total Services</th>
+                <th>Assigned Caregiver</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -109,26 +246,31 @@
                     <tr>
                         <td>{{ $plan['clientName'] }}</td>
                         <td>{{ $plan['planType'] }}</td>
-                        <td>{{ $plan['startDate'] }}</td>
-                        <td>{{ $plan['endDate'] }}</td>
-                        <td>{{ $plan['status'] }}</td>
+                        <td>{{ date('d M Y', strtotime($plan['startDate'])) }}</td>
+                        <td>{{ date('d M Y', strtotime($plan['endDate'])) }}</td>
+                        <td>
+                            <span class="status-badge {{ $plan['status'] === 'Active' ? 'active' : 'inactive' }}">
+                                {{ $plan['status'] }}
+                            </span>
+                        </td>
                         <td>{{ $plan['totalServices'] }}</td>
                         <td>{{ $plan['caregiverName'] }}</td>
                         <td>
-                        <a href="{{ route('careplan.view', [$plan['userId'], $plan['planId']]) }}" class="icon-btn" title="View">
-    <i class="fas fa-eye"></i>
-</a>
-                            <a href="{{ route('careplan.edit', [$plan['userId'], $plan['planId']]) }}" class="icon-btn" title="Edit">
-                                <i class="fas fa-edit"></i>
+                            <a href="{{ route('careplan.editCaregiver', [$plan['userId'], $plan['planId']]) }}" class="action-btn" title="View Care Plan">
+                                <i class="fas fa-eye"></i>
                             </a>
-                            <form action="{{ route('careplan.delete', [$plan['userId'], $plan['planId']]) }}" method="POST" style="display:inline-block;">
+                            <!-- <a href="{{ route('careplan.editCaregiver', [$plan['userId'], $plan['planId']]) }}" class="action-btn" title="Edit Caregiver">
+                                <i class="fas fa-edit"></i>
+                            </a> -->
+                            <form action="{{ route('careplan.editCaregiver', [$plan['userId'], $plan['planId']]) }}" method="POST" style="display:inline-block;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="icon-btn" title="Delete" onclick="return confirm('Are you sure you want to delete this care plan?')">
+                                <button type="submit" class="action-btn delete" title="Delete Care Plan" onclick="return confirm('Are you sure you want to delete this care plan?')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </form>
                         </td>
+
                     </tr>
                 @endforeach
             @else
@@ -141,44 +283,13 @@
 </div>
 
 <script>
-    let sortDirections = {};
-
-    function sortTable(columnIndex) {
-        const table = document.getElementById('carePlanTable');
-        const rows = Array.from(table.rows).slice(1); // Skip the header row
-        const isAscending = !sortDirections[columnIndex]; // Toggle direction
-
-        rows.sort((rowA, rowB) => {
-            const cellA = rowA.cells[columnIndex].textContent.trim();
-            const cellB = rowB.cells[columnIndex].textContent.trim();
-
-            if (!isNaN(cellA) && !isNaN(cellB)) {
-                return isAscending ? cellA - cellB : cellB - cellA;
-            } else {
-                return isAscending ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
-            }
-        });
-
-        sortDirections[columnIndex] = isAscending; // Save the new direction
-
-        rows.forEach(row => table.tBodies[0].appendChild(row));
-    }
-
-    document.getElementById('searchBox').addEventListener('input', function () {
-        const filter = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#carePlanTable tbody tr');
-
-        rows.forEach(row => {
-            const clientName = row.cells[0].textContent.toLowerCase();
-            const caregiverName = row.cells[6].textContent.toLowerCase();
-            if (clientName.includes(filter) || caregiverName.includes(filter)) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
+    // Toggle filter fields based on selected search criteria
+    document.getElementById('searchBy').addEventListener('change', function () {
+        const searchBy = this.value;
+        document.getElementById('clientNameFilter').style.display = searchBy === 'clientName' ? '' : 'none';
+        document.getElementById('caregiverNameFilter').style.display = searchBy === 'caregiverName' ? '' : 'none';
+        document.getElementById('statusFilter').style.display = searchBy === 'status' ? '' : 'none';
     });
-
 </script>
 
 @endsection

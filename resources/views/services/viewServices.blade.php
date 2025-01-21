@@ -45,13 +45,29 @@
         .blue-board .btn:hover {
             background-color: #e05555;
         }
+        
+        .filter-bar {
+                margin-bottom: 20px;
+                background-color: #f8f9fa;
+                padding: 15px;
+                border-radius: 8px;
+                border: 1px solid #ddd;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            
 
         /* Filter Section Styling */
         .filter-container {
             display: flex;
-            align-items: center;
-            margin-bottom: 15px;
+            align-items: center;s
             gap: 10px;
+
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .filter-container select,
@@ -79,63 +95,236 @@
             background-color: #0056b3;
         }
 
-        /* Table Container */
-        .table-container {
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            margin-top: 15px;
-        }
+        <style>
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+.filter-bar {
+        margin-bottom: 20px;
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-        table, th, td {
-            border: 1px solid #ddd;
-        }
+    .filter-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        align-items: center;
+    }
 
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        width: 100%;
+        margin-bottom: 15px;
+    }
 
-        thead {
-            background-color: #f4f4f4;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 150px;
+    }
 
-        th {
-            background-color: #e2e2e2;
-        }
+    .form-group label {
+        font-weight: bold;
+        font-size: 14px;
+        color: #333;
+    }
 
-        /* Action Button Styling */
-        .action-btn {
-            display: inline-block;
-            background-color: #28a745;
+    .form-control {
+        padding: 8px 12px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+    
+    .search-bar .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+      /* Blue Board Styling */
+      .blue-board {
+            background-color: #003366;
             color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .blue-board h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .blue-board .btn {
+            background-color: #ff6666;
             border: none;
+            padding: 10px 15px;
+            color: white;
             border-radius: 5px;
-            padding: 6px 12px;
-            font-size: 12px;
-            text-align: center;
-            cursor: pointer;
             text-decoration: none;
+            font-size: 14px;
             font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .action-btn i {
-            margin-right: 5px;
+        .blue-board .btn:hover {
+            background-color: #e05555;
         }
 
-        .action-btn:hover {
-            background-color: #218838;
-            transform: scale(1.05);
-        }
+    .table-container {
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #ddd;
+        margin-top: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Arial', sans-serif;
+    }
+
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+    }
+
+    thead {
+        background-color: #003366;
+        color: white;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .status-badge {
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+        display: inline-block;
+    }
+
+    .status-badge.active {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-badge.inactive {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .action-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .action-btn:hover {
+        background-color: #0056b3;
+        transform: scale(1.05);
+    }
+    /* Compact Search By */
+    .compact-search-by {
+        max-width: 150px;
+    }
+
+    .compact-select {
+        padding: 8.8px 10px;
+        font-size: 12px;
+    }
+
+    .table-container {
+        max-height: 400px; /* Set the max height for the table */
+        overflow-y: auto; /* Enable vertical scrolling */
+        border: 1px solid #ddd; /* Add a border around the table */
+    }
+
+    .table-container table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* Ensures consistent column width */
+    }
+
+    .table-container thead th {
+        position: sticky;
+        top: 0;
+        background-color:#003366; /* Set a background color for the header */
+        z-index: 10;
+        text-align: left;
+    }
+
+    .table-container th, .table-container td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .table-container tbody tr:hover {
+        background-color:rgb(203, 231, 255); /* Highlight the row on hover */
+    }
+        
     </style>
 </head>
 <body>

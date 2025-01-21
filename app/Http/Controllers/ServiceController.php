@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\FirebaseService;
+use App\Services\StorageService;
 use Illuminate\Http\Request;
 
 
@@ -11,9 +12,10 @@ class ServiceController extends Controller
     protected $firebaseService;
 
     // Inject FirebaseService into the constructor
-    public function __construct(FirebaseService $firebaseService)
+    public function __construct(FirebaseService $firebaseService, StorageService $storage)
     {
         $this->firebaseService = $firebaseService;
+        $this->storage = $storage;
     }
 
     // Display all services with categories
@@ -34,7 +36,10 @@ class ServiceController extends Controller
         session([
             'role' => $userData['role_name'] ?? 'Unknown',
             'username' => $userData['username'] ?? 'Guest',
+            'name' => $userData['name'] ?? 'Unknown',
         ]);
+
+        $imageUrl = $this->storage->getImage($userId);
     
         try {
             $services = $this->firebaseService->getAllServices();
@@ -63,6 +68,16 @@ class ServiceController extends Controller
     
                 $filteredServices[] = $service;
             }
+
+              // Sort services alphabetically by name and prioritize active services
+            usort($filteredServices, function ($a, $b) {
+                // Sort active above inactive
+                if ($a['status'] !== $b['status']) {
+                    return $a['status'] ? -1 : 1;
+                }
+                // If status is the same, sort alphabetically by service name
+                return strcasecmp($a['service'], $b['service']);
+            });
     
             // Normalize categories
             $normalizedCategories = [];
@@ -101,8 +116,10 @@ class ServiceController extends Controller
             return view('services.viewServices', [
                 'services' => $filteredServices,
                 'serviceCategories' => $normalizedCategories,
+                'imageUrl' => $imageUrl,
                 'role' => session('role'),
                 'username' => session('username'),
+                'name' => session('name'),
                 'selectedService' => $selectedService,
                 'selectedCategory' => $selectedCategory,
                 'selectedStatus' => $selectedStatus,
@@ -122,6 +139,8 @@ class ServiceController extends Controller
             if (!$userId) {
                 return redirect()->route('login');
             }
+
+            $imageUrl = $this->storage->getImage($userId);
 
             try {
                 $services = $this->firebaseService->getAllServices();
@@ -148,6 +167,8 @@ class ServiceController extends Controller
                     'serviceCategories' => $normalizedCategories,
                     'role' => session('role'),
                     'username' => session('username'),
+                    'name' => session('name'),
+                    'imageUrl' => $imageUrl,
                 ]);
                 
             } catch (\Exception $e) {
@@ -188,6 +209,18 @@ class ServiceController extends Controller
                 'location' => 'required|string|max:255',
                 'status' => 'required|boolean',
             ]);
+
+                // **New Step:** Check if the service name is unique in Firebase
+                $existingServices = $this->firebaseService->getAllServices();
+                $serviceName = $validated['service'];
+
+                foreach ($existingServices as $existingService) {
+                    if (isset($existingService['service']) && strcasecmp($existingService['service'], $serviceName) === 0) {
+                        return back()
+                            ->withErrors(['service' => 'The service name has already been taken.'])
+                            ->withInput();
+                    }
+                }
         
             try {
                 // Retrieve all services to determine the next auto-increment ID
@@ -250,18 +283,23 @@ class ServiceController extends Controller
             if (!$userData) {
                 return redirect()->route('login');
             }
+
+            $imageUrl = $this->storage->getImage($userId);
         
             $role = $userData['role_name'] ?? 'Unknown';
             $username = $userData['username'] ?? 'Guest';
+            $name = $userData['name'] ?? 'Guest';
         
             session([
                 'role' => $role,
                 'username' => $username,
+                'name' => $name,
+                'imageUrl' => $imageUrl,
             ]);
         
             $serviceCategories = $this->firebaseService->getAllServiceCategories();
         
-            return view('services.create', compact('serviceCategories', 'role', 'username'));
+            return view('services.create', compact('serviceCategories', 'role', 'username', 'name', 'imageUrl'));
         }
         
 

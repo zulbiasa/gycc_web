@@ -3,6 +3,8 @@
 @section('title', 'Add New Service')
 
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <style>
     .form-container {
         max-width: 800px;
@@ -84,18 +86,42 @@
     }
 </style>
 
+
+
 <div class="form-container">
     <div class="form-header">
         <h3>Add New Service</h3>
     </div>
     <div class="form-body">
+    @if ($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: '{{ $errors->first() }}',
+                confirmButtonText: 'OK'
+            }).then(() => {
+                // Focus on the first invalid field
+                const errorFieldName = '{{ array_key_first($errors->toArray()) }}';
+                const errorField = document.querySelector(`[name="${errorFieldName}"]`);
+                if (errorField) {
+                    errorField.focus();
+                }
+            });
+        });
+    </script>
+@endif
+
+
         <form action="{{ route('services.store') }}" method="POST">
             @csrf
             <table>
                 <tr>
                     <th>Service Name:</th>
                     <td>
-                        <input type="text" name="service" class="form-control" required>
+                        <input type="text" name="service" id="service" class="form-control" required>
+
                     </td>
                 </tr>
                 <tr>

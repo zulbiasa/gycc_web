@@ -29,8 +29,9 @@ class LoginController extends Controller
             // Store user_id and role in the session
             session(['user_id' => $user['userId']]);
             session(['role' => $userData['role']]);
-    
-            return redirect()->route('dashboard');
+            session(['name' => $userData['name']]);
+
+            return redirect()->route('aboutus');
         }
     
         // If no user is found, return error

@@ -6,19 +6,38 @@
     <title>@yield('title', 'GYCC+')</title>
     <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
         /* Sidebar Styling */
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
             width: 250px;
-            background-color: #2f3b52;
-            color: #ffffff;
-            padding: 20px 0;
-            transition: transform 0.3s ease-in-out;
-            z-index: 1000;
+            height: 100vh;
+            /* background-color: #2f3b52; */
+            background: linear-gradient(135deg, #0056b3, #007bff);
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+         /* General styles */
+         body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure body stretches full height */
+        }
+
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            flex: 1; /* Push footer to the bottom */
         }
 
         .sidebar a {
@@ -26,10 +45,11 @@
             padding: 10px 20px;
             color: white;
             text-decoration: none;
+
         }
 
         .sidebar a:hover {
-            background-color:rgb(70, 147, 175);
+            background-color:rgb(0, 6, 61);
         }
 
         /* Sidebar Hidden State for Mobile */
@@ -59,9 +79,20 @@
             color: white;
         }
 
-        .footer{
+        /* .footer{
             z-index: 1001;
             background-color: #2f3b52;
+        } */
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(135deg, #0056b3, #007bff);
+            color: white;
+            z-index: 1001;
+            padding: 20px;
+            text-align: center;
+            width: 100%;
+          
         }
 
         /* Responsive Design */
