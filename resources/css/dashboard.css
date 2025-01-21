@@ -1,0 +1,192 @@
+/* resources/css/dashboard.css */
+
+/* General styling for the dashboard content */
+     /* Content Area (Shifted Right for Sidebar) */
+     .content {
+        margin-left: 250px; /* Adjust content to the right of the sidebar */
+        padding: 20px;
+        height: 100vh; /* Ensure content stretches */
+        overflow-y: auto; /* Scrollable content */
+    }
+
+    /* Account & Logout Section */
+    .account-logout-container {
+        margin-top: auto; /* Push to the bottom */
+    }
+
+.dashboard-content {
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+
+.cards-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.card {
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 30%;
+    text-align: center;
+}
+
+.card h3 {
+    color: #333;
+}
+
+.card p {
+    color: #777;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #2f3b52;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* Align content to the top */
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999; /* Ensure sidebar is on top of other content */
+    overflow-y: auto; /* Make sidebar content scrollable if necessary */
+
+}
+
+
+/* Ensure the Account and Logout are fixed at the bottom */
+.sidebar .account-logout-container {
+    margin-top: auto; /* Push Account and Logout to the bottom */
+}
+
+
+/* Sidebar Logo */
+.sidebar-logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007BFF;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+/* Sidebar Links */
+.nav-link {
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px 15px;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #3e4c67;
+}
+
+.nav-link i {
+    margin-right: 10px;
+}
+
+/* Child Links */
+.child-links {
+    display: none;
+    margin-left: 20px;
+}
+
+.child-links a {
+    display: block;
+    color: #d3d3d3;
+    font-size: 14px;
+    padding: 8px 0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.child-links a:hover {
+    color: #fff;
+}
+
+/* Navbar styling */
+.navbar {
+    background-color: #1a4d8f;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.navbar a {
+    color: white;
+    font-size: 1.1rem;
+    padding: 10px;
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    background-color: #0049b7;
+    border-radius: 5px;
+}
+
+
+.child-links {
+    display: block;
+    margin-left: 20px;
+    max-height: 0; /* Initially collapsed */
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.child-links a {
+    display: block;
+    color: #d3d3d3;
+    padding: 8px 0;
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.child-links a:hover {
+    color: #fff;
+}
+
+/* Account & Logout Section (Inside a Container for Flex Positioning) */
+.account-logout-container {
+    margin-top: auto; /* Push to the bottom */
+}
+
+/* Account and Logout Section */
+.account-link, .logout-link {
+    margin-top: 20px;
+    color: #d3d3d3;
+}
+
+.logout-link {
+    color: #ff4d4d;
+}
+
+/* Footer Styles */
+.footer {
+    position: fixed; /* Change to fixed so it stays at the bottom */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    z-index: 1; /* Ensure the footer is in front */
+    transition: transform 0.3s ease; /* Smooth transition for hiding/showing */
+}
+
+
+
