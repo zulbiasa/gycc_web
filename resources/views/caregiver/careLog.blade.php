@@ -266,10 +266,14 @@ select {
                             @if (isset($userData['reminders']) && !empty($userData['reminders']))
                                 {{-- Sort the reminders by actionDate in descending order --}}
                                 @php
-                                    // Sort the reminders in descending order based on actionDate
-                                    $sortedReminders = collect($userData['reminders'])->sortByDesc(function ($reminder) {
-                                        return strtotime($reminder['date']);
-                                    });
+                                    // Filter out reminders without a 'date' and then sort the reminders in descending order based on 'date'
+                                    $sortedReminders = collect($userData['reminders'])
+                                        ->filter(function ($reminder) {
+                                            return isset($reminder['date']); // Only keep reminders that have a 'date' field
+                                        })
+                                        ->sortByDesc(function ($reminder) {
+                                            return strtotime($reminder['date']); // Sort based on 'date'
+                                        });
                                 @endphp
 
                                 <!-- Grouping reminders by user and displaying the user's name -->
@@ -297,7 +301,11 @@ select {
                                                 @foreach ($sortedReminders as $reminderId => $reminder)
                                                     <tr>
                                                         <td>{{ \Carbon\Carbon::parse($reminder['date'])->format('d-M-Y') ?? 'N/A' }}</td>
-                                                        <td>{{ \Carbon\Carbon::parse($reminder['time'])->format('H:i') ?? 'N/A' }}</td>
+                                                        <td>    @if(isset($reminder['time']))
+                                                                    {{ \Carbon\Carbon::parse($reminder['time'])->format('H:i') }}
+                                                                @else
+                                                                    {{-- Leave the cell empty or do not render anything --}}
+                                                                @endif</td>
                                                         <td>{{ isset($reminder['actionDate']) ? \Carbon\Carbon::parse($reminder['actionDate'])->format('d-M-Y') : 'N/A' }}</td>
                                                         <td>{{ isset($reminder['actionTime']) ? \Carbon\Carbon::parse($reminder['actionTime'])->format('H:i') : 'N/A' }}</td>
                                                         <td>{{ $reminder['medicineName'] ?? 'N/A' }}</td>

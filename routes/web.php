@@ -14,6 +14,8 @@ use App\Http\Controllers\RegisterCarePlanController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\CareLogController;
 use App\Http\Controllers\ViewCarePlanController;
+use App\Http\Controllers\QuotationController;
+use Illuminate\Support\Facades\File;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -49,6 +51,7 @@ Route::prefix('users')->group(function () {
 Route::middleware(['session.auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/aboutus', [DashboardController::class, 'aboutUs'])->name('aboutus');
+    Route::get('/recent-activities', [DashboardController::class, 'index'])->name('recentActivities.filter');
 
     // User Management Routes
     Route::prefix('users')->group(function () {
@@ -77,18 +80,12 @@ Route::middleware(['session.auth'])->group(function () {
         Route::get('/view/{userId}/{planId}', [CarePlanController::class, 'view'])->name('careplan.view'); // View a specific care plan
         Route::get('/{userId}/{planId}/edit-caregiver', [CarePlanController::class, 'editCaregiver'])->name('careplan.editCaregiver'); // Edit caregiver for a specific care plan
         Route::post('/{userId}/{planId}/edit-caregiver', [CarePlanController::class, 'editCaregiver']); // Save changes to caregiver
+        Route::put('/{userId}/{planId}/status', [CarePlanController::class, 'updateStatus'])->name('careplan.updateStatus');
+        Route::delete('/{userId}/{planId}', [CarePlanController::class, 'delete'])->name('careplan.delete');
+
     });
 
-    // Route::prefix('careplan')->group(function () {
-    //     Route::get('/', [CarePlanController::class, 'index'])->name('careplan.index'); // View all care plans
-    //     Route::get('/view/{userId}/{planId}', [CarePlanController::class, 'view'])->name('careplan.view'); // View a specific care plan
-    //     Route::get('/edit/{userId}/{planId}', [CarePlanController::class, 'edit'])->name('careplan.edit'); // Edit specific care plan
-    //     Route::post('/update/{userId}/{planId}', [CarePlanController::class, 'update'])->name('careplan.update'); // Update care plan
-    //     Route::delete('/delete/{userId}/{planId}', [CarePlanController::class, 'delete'])->name('careplan.delete'); // Delete care plan
-
-    // });
-
-     // My Account Routes
+     /// My Account Routes
      Route::prefix('myaccount')->group(function () {
         Route::get('/', [AccountController::class, 'viewAccount'])->name('myaccount.view');
         Route::get('/edit', [AccountController::class, 'editAccount'])->name('myaccount.edit');
@@ -110,11 +107,43 @@ Route::prefix('firebase')->group(function () {
     Route::delete('/delete-data/{id}', [FirebaseController::class, 'destroy'])->name('delete-data');
 });
 
-//CAREPLAN QUOTATION
-Route::get('/careplan-quote', function () {return view('careplan-quote');})->name('careplan-quote');
+//================================CAREPLAN QUOTATION===========================================
+
 Route::get('/service', [ServiceController::class, 'index'])->name('services.index');
 Route::get('/fetch-services', [ServiceController::class, 'fetchServices'])->name('services.fetch');
-Route::get('/quotation', function () {return view('quotation');})->name('quotation');
+Route::post('/submit-quotation', [QuotationController::class, 'store'])->name('quotations.store');
+
+Route::prefix('quotation')->group(function () {
+    // Views for Quotation Management
+    Route::get('/view', function () {
+        return view('quotation/quotation');
+    })->name('quotation');
+
+    Route::get('/careplan-quote', function () {
+        return view('quotation/careplan-quote');
+    })->name('careplan-quote');
+
+    // Quotation Management Routes
+    Route::prefix('management')->group(function () {
+        Route::get('/', [QuotationController::class, 'index'])->name('quotations.index');
+        Route::get('/{id}', [QuotationController::class, 'show'])->name('quotations.show'); // Details view
+        Route::put('/{id}', [QuotationController::class, 'update'])->name('quotations.update'); // Update quotation
+        Route::delete('/{id}', [QuotationController::class, 'destroy'])->name('quotations.destroy'); // Delete quotation
+        Route::patch('/{id}/complete', [QuotationController::class, 'complete'])->name('quotations.complete'); // Mark as complete
+        Route::get('/details/{id}', [QuotationController::class, 'details'])->name('quotations.details'); // Detailed view
+        Route::get('/print/{id}', [QuotationController::class, 'print'])->name('quotations.print'); // Generate PDF
+        Route::get('/search', [QuotationController::class, 'search'])->name('quotations.search');
+        Route::put('{quotationId}/update-negotiation-status', [QuotationController::class, 'updateNegotiationStatus']);
+
+});
+
+    // Thank You Page
+    Route::get('/thankyou', function () {
+        return view('thankyou');
+    })->name('thankyou');
+});
+
+//=============================================================================================
 
 //Client register route
 Route::get('/register', [RegisterController::class, 'index'])
@@ -151,3 +180,9 @@ Route::get('/viewCarePlan', [ViewCarePlanController::class, 'index'])
 Route::get('/careLog', [CareLogController::class, 'index'])
     ->name('careLog')
     ->middleware('session.auth');
+
+//Json File
+Route::get('/poscodes', function () {
+    $path = resource_path('data/poscodes.json');
+    return response()->json(json_decode(File::get($path)), 200);
+});

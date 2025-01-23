@@ -153,7 +153,7 @@
 
 <div class="container">
     <div class="header" style="text-color:rgb(255, 255, 255);">
-        Edit Care Plan
+        Assign Caregiver
     </div>
 
     <form method="POST" action="{{ route('careplan.editCaregiver', [$carePlan['userId'], $carePlan['planId']]) }}">
@@ -203,13 +203,13 @@
             <input type="text" id="status" class="form-control" value="{{ $carePlan['status'] ?? 'Inactive' }}" readonly>
         </div>
 
-        <!-- Total Services -->
+        <!-- Total Services
         <div class="form-group">
             <label for="totalServices">Total Services</label>
             <input type="text" id="totalServices" class="form-control" value="{{ $carePlan['totalServices'] ?? 0 }}" readonly>
-        </div>
+        </div> -->
 
-        <!-- Services Table -->
+        <!-- Services Table
         <div class="container">
             <div>
                 <h3>Registered Services</h3>
@@ -244,7 +244,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> -->
 <br>
         
         <!-- Costs Section -->

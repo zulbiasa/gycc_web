@@ -118,6 +118,19 @@ class FirebaseService
         return $careLogs ?: []; // Return care logs or an empty array if no data
     }
 
+
+    public function fetchServices()
+    {
+        $services = $this->firebaseService->getAllServices();
+
+        return response()->json($services);
+    }
+
+    public function getMedicationById($medicationId)
+{
+    $medications = $this->getAllMedications(); // Assume this fetches all medications
+    return $medications[$medicationId] ?? null;
+}
     public function getUserDataById($userId)
     {
         $usersRef = $this->firebase->getReference('User');
@@ -423,11 +436,12 @@ public function getCareLog($userId)
                     return isset($carePlan['caregiverID']) && $carePlan['caregiverID'] == $userId;
                 })
             ) {
-                // Check if 'Reminder' and 'medicineRemind' exist
+                // Check if 'Reminder' and 'medicineRemind' exist and have reminders
                 if (isset($userData['Reminder']['medicineRemind']) && !empty($userData['Reminder']['medicineRemind'])) {
-                    // Sort reminders by actionDate in descending order
+                    // Sort reminders by actionDate in descending order, checking if 'date' exists in each reminder
                     $sortedReminders = collect($userData['Reminder']['medicineRemind'])->sortByDesc(function ($careLog) {
-                        return \Carbon\Carbon::parse($careLog['date']);
+                        // Only attempt to parse 'date' if it exists
+                        return isset($careLog['date']) ? \Carbon\Carbon::parse($careLog['date']) : \Carbon\Carbon::minValue();
                     })->toArray();
 
                     // Add the user details and their sorted reminders
@@ -439,10 +453,11 @@ public function getCareLog($userId)
             }
         }
     }
-  
 
     // Return the filtered users with sorted reminders
     return $usersWithReminders;
 }
+
+
 
 }

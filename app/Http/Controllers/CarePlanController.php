@@ -135,6 +135,8 @@ class CarePlanController extends Controller
             'view' => $view,
         ]);
     }
+
+    
     
     
 /**

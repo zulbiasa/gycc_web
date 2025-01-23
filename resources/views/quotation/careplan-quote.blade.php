@@ -126,7 +126,7 @@
         <!-- Fixed Footer -->
         <div id="fixed-footer">
             <h4>Total Cost: <span id="total-cost">RM 0.00</span></h4>
-            <a href="/quotation" class="btn btn-primary" id="submit-selection">Submit Selection</a>
+            <a href="{{ route('quotation') }}" class="btn btn-primary" id="submit-selection">Submit Selection</a>
         </div>
     </div>
 
@@ -157,7 +157,7 @@
                                         <p><strong>Cost:</strong> RM ${parseFloat(service.cost).toFixed(2)}</p>
                                         <div class="mt-auto">
                                             <div class="form-check">
-                                                <input type="checkbox" class="form-check-input service-checkbox" id="service-${key}" data-service="${service.service}" data-cost="${service.cost}">
+                                                <input type="checkbox" class="form-check-input service-checkbox" id="service-${key}" data-id="${service.id}" data-service="${service.service}" data-cost="${service.cost}">
                                                 <label class="form-check-label" for="service-${key}">Select this service</label>
                                             </div>
                                         </div>
@@ -205,6 +205,7 @@
                 const selectedServices = [];
                 document.querySelectorAll('.service-checkbox:checked').forEach(checkbox => {
                     selectedServices.push({
+                        id: checkbox.dataset.id,
                         service: checkbox.dataset.service,
                         cost: checkbox.dataset.cost
                     });

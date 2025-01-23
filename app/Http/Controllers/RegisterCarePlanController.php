@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Services\FirebaseService; // Make sure to import the FirebaseService
-use App\Services\StorageService;
 use Illuminate\Http\Request;
 
 class RegisterCarePlanController extends Controller
@@ -11,10 +10,9 @@ class RegisterCarePlanController extends Controller
     protected $firebaseService;
 
     // Inject FirebaseService into the constructor
-    public function __construct(FirebaseService $firebaseService, StorageService $storage)
+    public function __construct(FirebaseService $firebaseService)
     {
         $this->firebaseService = $firebaseService;
-        $this->storage = $storage;
     }
 
     public function index()
@@ -42,7 +40,6 @@ class RegisterCarePlanController extends Controller
         $role = $userData['role'];
         $username = $userData['username'];  
         $name = $userData['name']; 
-        $imageUrl = $this->storage->getImage($userId);
     
         // Fetch all users from Firebase using FirebaseService
         $users = $this->firebaseService->getAllUsers(); 
@@ -54,7 +51,6 @@ class RegisterCarePlanController extends Controller
             'username' => $userData['username'] ?? 'Guest',
             'role' => $userData['role_name'] ?? 'Unknown',
             'name' => $userData['name'] ?? 'Unknown',
-            'imageUrl' => $imageUrl,
             'services' => $services,
         ],compact('clients'));
     }
@@ -70,6 +66,11 @@ class RegisterCarePlanController extends Controller
         $endDate = $request->input('end_date');
         $services = $request->input('services'); // Assuming an array of services
         $totalCost = $request->input('total_cost');
+
+        // Validate caregiver_id and client_id
+        if (is_null($caregiverId) || is_null($clientId)) {
+            return response()->json(['error' => 'Caregiver ID and Client ID are required.'], 400);
+        }
 
         date_default_timezone_set('Asia/Kuala_Lumpur');
         $currentDateTime = date('Y-m-d H:i:s'); 
@@ -111,11 +112,10 @@ class RegisterCarePlanController extends Controller
             // Create the node if it doesn't exist and set its priority to 'Low'
             $assignCaregiverRef->getChild($clientId)->set('', ['.priority' => 'Low']);
         }
-        
 
         return response()->json([
             'message' => 'Care plan and caregiver assignment saved successfully.',
-            'care_plan_id' => $carePlanRef->getKey(),
+            'care_plan_id' => $newCarePlanRef->getKey(),
             'reload' => true,
         ]);
     } catch (\Exception $e) {
@@ -123,6 +123,7 @@ class RegisterCarePlanController extends Controller
         return response()->json(['error' => 'Failed to create care plan: ' . $e->getMessage()], 500);
     }
 }
+
 
 
 

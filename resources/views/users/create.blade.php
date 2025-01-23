@@ -64,12 +64,27 @@
                 <input type="text" name="phone_no" id="phone_no" class="form-control" value="{{ old('phone_no') }}" required>
 
                 <label for="dob">Date of Birth:</label>
-                <input type="text" name="dob" id="dob" class="form-control" value="{{ old('dob') }}" readonly required>
+                <input type="text" name="dob" id="dob" class="form-control" style="background-color: transparent; box-shadow: none; border: none;" value="{{ old('dob') }}" readonly>
 
-                <!-- <select name="gender" id="gender" class="form-control" required> -->
+                <div class="mb-3">
+                <label for="poscode" class="form-label">Postcode</label>
+                <input type="text" class="form-control" id="poscode" name="poscode" value="{{ old('poscode') }}" required>
+                </div>
 
-                <label for="home_address">Home Address:</label>
-                <textarea name="home_address" id="home_address" class="form-control" required>{{ old('home_address') }}</textarea>
+                <div class="mb-3">
+                    <label for="city" class="form-label">City</label>
+                    <input type="text" class="form-control" style="background-color: transparent; box-shadow: none; border: none;" id="city" name="city" value="{{ old('city') }}" readonly>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="state" class="form-label">State</label>
+                    <input type="text" class="form-control" style="background-color: transparent; box-shadow: none; border: none;" id="state" name="state" value="{{ old('state') }}" readonly>
+                </div>
+
+                <div class="mb-3">
+                <label for="Address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="address" name="address" value="{{ old('address') }}" required>
+                </div>
 
                 <label for="status">Status:</label>
                 <select name="status" id="status" class="form-control" required>
@@ -78,10 +93,8 @@
                 </select>
 
                 <label for="gender">Gender:</label>
-                <select name="gender" id="gender" class="form-control" required>
-                    <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>Male</option>
-                    <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
-                </select>
+                <input name="gender" id="gender" class="form-control" style="background-color: transparent; box-shadow: none; border: none;" value="{{ old('gender') }}" readonly>
+                </input>
 
                 <label for="profile_photo">Profile Photo:</label>
                 <input type="file" name="profile_photo" id="profile_photo" class="form-control" accept="image/*">
@@ -113,6 +126,21 @@
                 <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" required>
         </div>
 
+        <div class="form-container">
+            <h4>Authorized Contact Person</h4>
+            <label for="contact_name">Name:</label>
+            <input type="text" name="contact_name" id="contact_name" class="form-control" value="{{ old('contact_name') }}">
+
+            <label for="contact_ic">IC Number:</label>
+            <input type="text" name="contact_ic" id="contact_ic" class="form-control" value="{{ old('contact_ic') }}">
+
+            <label for="contact_relationship">Relationship:</label>
+            <input type="text" name="contact_relationship" id="contact_relationship" class="form-control" value="{{ old('contact_relationship') }}">
+
+            <label for="contact_phone_no">Phone Number:</label>
+            <input type="text" name="contact_phone_no" id="contact_phone_no" class="form-control" value="{{ old('contact_phone_no') }}">
+        </div>
+
         <div id="clientSection" style="display: none;">
             <div class="form-container">
                 <h4>Medical & Health Information</h4>
@@ -139,17 +167,17 @@
                 <input type="number" step="0.1" name="height" id="height" class="form-control" value="{{ old('height') }}">
 
                 <!-- Allergic -->  
-                <label for="allergic">Allergic:</label>
+                <label for="allergic">Has Allergies:</label>
                 <select name="allergic" id="allergic" class="form-control" onchange="toggleAllergyFields()">
                     <option value="no" {{ old('allergic') === 'no' ? 'selected' : '' }}>No</option>
                     <option value="yes" {{ old('allergic') === 'yes' ? 'selected' : '' }}>Yes</option>
                 </select>
 
                 <div id="allergyFields" style="display: none;">
-                    <label for="food_allergy">Food Allergy:</label>
+                    <label for="food_allergy">Food Allergies:</label>
                     <input type="text" name="food_allergy" id="food_allergy" class="form-control" value="{{ old('food_allergy') }}">
 
-                    <label for="medicine_allergy">Medicine Allergy:</label>
+                    <label for="medicine_allergy">Medicine Allergies:</label>
                     <input type="text" name="medicine_allergy" id="medicine_allergy" class="form-control" value="{{ old('medicine_allergy') }}">
                 </div>
                 <br>
@@ -241,18 +269,29 @@
                 </script>
                     <div class="form-group">
                         <label for="medications">Medications:</label>
-                            <div style="display: flex; align-items: center;">
-                                <select id="medication_dropdown" class="form-control" style="width: 70%;">
-                                    <option value="">-- Select Medication --</option>
-                                    @foreach ($medications as $medication)
-                                        <option value="{{ $medication['id'] }}" data-name="{{ $medication['name'] }}" data-purpose="{{ $medication['use'] }}">
-                                            {{ $medication['name'] }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <button type="button" class="btn btn-primary" onclick="addMedication()" style="margin-left: 10px;">Add Medication</button>
-                            </div>
-                        <!-- Medications List -->
+                        <div style="display: flex; align-items: center;">
+                            <select id="medication_dropdown" class="form-control" style="width: 70%;" onchange="checkForCustomMedication()">
+                                <option value="">-- Select Medication --</option>
+                                @foreach ($medications as $medication)
+                                    <option value="{{ $medication['id'] }}" data-name="{{ $medication['name'] }}" data-purpose="{{ $medication['use'] }}">
+                                        {{ $medication['name'] }}
+                                    </option>
+                                @endforeach
+                                <option value="other">Other</option>
+                            </select>
+                            <button type="button" class="btn btn-primary" onclick="addMedication()" style="margin-left: 10px;">Add Medication</button>
+                        </div>
+                    </div>
+
+                        <!-- Custom Medication Input Fields -->
+                        <div id="customMedicationFields" style="display: none; margin-top: 15px;">
+                            <label for="custom_medication_name">Custom Medication Name:</label>
+                            <input type="text" id="custom_medication_name" class="form-control" placeholder="Enter custom medication name">
+
+                            <label for="custom_medication_purpose">Custom Medication Purpose:</label>
+                            <input type="text" id="custom_medication_purpose" class="form-control" placeholder="Enter custom medication purpose">
+                        </div>
+
                         <ul id="medication_list" style="margin-top: 15px; list-style: none; padding-left: 0;">
                             <!-- Dynamically added medication items will appear here -->
                         </ul>
@@ -276,23 +315,8 @@
                 </select>
             </div>
         </div>
-
-
-        <div class="form-container">
-            <h4>Authorized Contact Person</h4>
-            <label for="contact_name">Name:</label>
-            <input type="text" name="contact_name" id="contact_name" class="form-control" value="{{ old('contact_name') }}">
-
-            <label for="contact_ic">IC Number:</label>
-            <input type="text" name="contact_ic" id="contact_ic" class="form-control" value="{{ old('contact_ic') }}">
-
-            <label for="contact_relationship">Relationship:</label>
-            <input type="text" name="contact_relationship" id="contact_relationship" class="form-control" value="{{ old('contact_relationship') }}">
-
-            <label for="contact_phone_no">Phone Number:</label>
-            <input type="text" name="contact_phone_no" id="contact_phone_no" class="form-control" value="{{ old('contact_phone_no') }}">
-        </div>
     </div>
+    
             <!-- Medical & Health Information Section (for Client only) -->
         
        
@@ -369,118 +393,180 @@
         document.getElementById('health_conditions_input').value = JSON.stringify(selectedData);
     }
 
+    function checkForCustomMedication() {
+        const dropdown = document.getElementById('medication_dropdown');
+        const customFields = document.getElementById('customMedicationFields');
+        customFields.style.display = dropdown.value === 'other' ? 'block' : 'none';
+    }
+    
     function addMedication() {
         const dropdown = document.getElementById('medication_dropdown');
+        const medicationList = document.getElementById('medication_list');
+        const medicationId = Date.now(); // Unique ID for each medication entry
+
         const selectedOption = dropdown.options[dropdown.selectedIndex];
-        const medicationId = selectedOption.value;
-        const medicationName = selectedOption.getAttribute('data-name');
-        const medicationPurpose = selectedOption.getAttribute('data-purpose');
+        const selectedMedicationId = dropdown.value; // Get the selected medication ID
+        const selectedMedicationName = selectedOption.getAttribute('data-name');
+        const selectedMedicationPurpose = selectedOption.getAttribute('data-purpose');
 
-        // Validate selection (prevent adding empty or duplicate entries)
-        if (!medicationId) {
-            alert('Please select a valid medication.');
+        if (!selectedMedicationId) {
+            alert('Please select a medication or choose "Other" for custom medication.');
             return;
         }
 
-        const existingItem = document.querySelector(`#medication_list li[data-id="${medicationId}"]`);
-        if (existingItem) {
-            alert('This medication is already added.');
-            return;
-        }
-
-        // Create a new list item
+        // Create a new medication list item
         const listItem = document.createElement('li');
         listItem.setAttribute('data-id', medicationId);
-        listItem.style.display = 'block';
-        listItem.style.marginBottom = '10px';
+        listItem.style.marginBottom = '15px';
         listItem.style.padding = '15px';
         listItem.style.border = '1px solid #ddd';
         listItem.style.borderRadius = '8px';
-        listItem.style.backgroundColor = '#f8f9fa';
-        listItem.style.boxShadow = '0px 2px 4px rgba(0, 0, 0, 0.1)';
 
-        // Medication Name Title
-        const title = document.createElement('h5');
-        title.textContent = medicationName;
-        title.style.fontSize = '16px';
-        title.style.marginBottom = '10px';
+        if (selectedMedicationId === 'other') {
+            // If "Other" is selected, show custom medication fields
+            const customName = document.getElementById('custom_medication_name').value.trim();
+            const customPurpose = document.getElementById('custom_medication_purpose').value.trim();
 
-        // Purpose Field
-        const purposeLabel = document.createElement('label');
-        purposeLabel.textContent = 'Purpose:';
-        purposeLabel.style.display = 'block';
-        purposeLabel.style.fontSize = '14px';
-        purposeLabel.style.marginBottom = '5px';
+            if (!customName || !customPurpose) {
+                alert('Please enter the custom medication name and purpose.');
+                return;
+            }
 
-        const purposeInput = document.createElement('input');
-        purposeInput.type = 'text';
-        purposeInput.value = medicationPurpose;
-        purposeInput.name = `medications[${medicationId}][purpose]`;
-        purposeInput.classList.add('form-control');
-        purposeInput.readOnly = true;
+            listItem.innerHTML = `
+                <h5>Custom Medication</h5>
+                <p>Name: ${customName}</p>
+                <p>Purpose: ${customPurpose}</p>
+                <input type="hidden" name="medications[${medicationId}][custom_name]" value="${customName}">
+                <input type="hidden" name="medications[${medicationId}][custom_purpose]" value="${customPurpose}">
+            `;
+        } else {
+            // If a medication is selected from the dropdown
+            listItem.innerHTML = `
+                <h5>${selectedMedicationName}</h5>
+                <p>Purpose: ${selectedMedicationPurpose}</p>
+                <input type="hidden" name="medications[${medicationId}][id]" value="${selectedMedicationId}">
+            `;
+        }
 
-        // Dosage Field
-        const dosageLabel = document.createElement('label');
-        dosageLabel.textContent = 'Dosage:';
-        dosageLabel.style.display = 'block';
-        dosageLabel.style.fontSize = '14px';
-        dosageLabel.style.marginTop = '10px';
-        dosageLabel.style.marginBottom = '5px';
+        // Add common medication fields (dosage, total pills, frequency, etc.)
+        listItem.innerHTML += `
+            <label>Dosage (e.g., 500mg):</label>
+            <input type="text" name="medications[${medicationId}][dosage_info]" class="form-control" required>
 
-        const dosageInput = document.createElement('input');
-        dosageInput.type = 'text';
-        dosageInput.name = `medications[${medicationId}][dosage]`;
-        dosageInput.classList.add('form-control');
-        dosageInput.placeholder = 'Enter dosage';
+            <label>Total Pills:</label>
+            <input type="number" name="medications[${medicationId}][total_pills]" class="form-control" required onchange="calculateEndDate(${medicationId})">
 
-        // Frequency Field
-        const frequencyLabel = document.createElement('label');
-        frequencyLabel.textContent = 'Frequency:';
-        frequencyLabel.style.display = 'block';
-        frequencyLabel.style.fontSize = '14px';
-        frequencyLabel.style.marginTop = '10px';
-        frequencyLabel.style.marginBottom = '5px';
+            <label>Pill Intake (per time):</label>
+            <input type="number" name="medications[${medicationId}][pill_intake]" class="form-control" required onchange="calculateEndDate(${medicationId})">
 
-        const frequencyInput = document.createElement('input');
-        frequencyInput.type = 'text';
-        frequencyInput.name = `medications[${medicationId}][frequency]`;
-        frequencyInput.classList.add('form-control');
-        frequencyInput.placeholder = '3 Times a Day...';
+            <label>Frequency (times per day):</label>
+            <select name="medications[${medicationId}][frequency]" class="form-control" onchange="adjustTimings(${medicationId}); calculateEndDate(${medicationId});">
+                <option value="1">Once a day</option>
+                <option value="2">Twice a day</option>
+                <option value="3">Three times a day</option>
+                <option value="4">Four times a day</option>
+            </select>
 
-        // Hidden Input for Medication Name
-        const nameInput = document.createElement('input');
-        nameInput.type = 'hidden';
-        nameInput.value = medicationName;
-        nameInput.name = `medications[${medicationId}][name]`;
+            <div id="timings_${medicationId}" style="margin-top: 10px;"></div>
 
-        // Remove Button
-        const removeButton = document.createElement('button');
-        removeButton.type = 'button';
-        removeButton.textContent = 'Remove';
-        removeButton.classList.add('btn', 'btn-danger', 'btn-sm');
-        removeButton.style.marginTop = '10px';
-        removeButton.onclick = function () {
-            listItem.remove();
-        };
+            <label>Start Date:</label>
+            <input type="date" name="medications[${medicationId}][start_date]" class="form-control" required onchange="calculateEndDate(${medicationId})">
 
-        // Append all fields to the list item
-        listItem.appendChild(title);
-        listItem.appendChild(purposeLabel);
-        listItem.appendChild(purposeInput);
-        listItem.appendChild(dosageLabel);
-        listItem.appendChild(dosageInput);
-        listItem.appendChild(frequencyLabel);
-        listItem.appendChild(frequencyInput);
-        listItem.appendChild(nameInput); // Hidden input for name
-        listItem.appendChild(removeButton);
+            <p id="end_date_${medicationId}" style="margin-top: 10px;"></p>
 
-        // Append the list item to the medication list
-        const medicationList = document.getElementById('medication_list');
+            <button type="button" class="btn btn-danger mt-2" onclick="this.parentElement.remove()">Remove</button>
+        `;
+
         medicationList.appendChild(listItem);
+        dropdown.value = ''; // Reset the dropdown
+        document.getElementById('customMedicationFields').style.display = 'none'; // Hide custom fields
+    
+        
+        // Disable the selected medication in the dropdown if the dates are valid
+        const startDateInput = listItem.querySelector(`input[name="medications[${medicationId}][start_date]"]`);
+        const endDateInput = listItem.querySelector(`input[name="medications[${medicationId}][end_date]"]`);
 
-        // Reset the dropdown selection
-        dropdown.value = '';
+        startDateInput.addEventListener('change', function () {
+            validateMedicationDates(startDateInput, endDateInput, selectedOption);
+        });
+
+        endDateInput.addEventListener('change', function () {
+            validateMedicationDates(startDateInput, endDateInput, selectedOption);
+        });
     }
+
+    function validateMedicationDates(startDateInput, endDateInput, selectedOption) {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+        const currentDate = new Date();
+
+        if (startDate && endDate && startDate <= endDate && startDate >= currentDate) {
+            selectedOption.disabled = true;
+        } else {
+            selectedOption.disabled = false;
+        }
+    }
+
+
+    function adjustTimings(medicationId) {
+        const timingContainer = document.getElementById(`timings_${medicationId}`);
+        const frequencyInput = document.querySelector(`select[name="medications[${medicationId}][frequency]"]`);
+        const frequency = parseInt(frequencyInput.value);
+
+        timingContainer.innerHTML = ''; // Clear existing timings
+
+        for (let i = 0; i < frequency; i++) {
+            const timingLabel = document.createElement('label');
+            timingLabel.textContent = `Time ${i + 1}:`;
+            timingLabel.style.display = 'block';
+
+            const timingInput = document.createElement('input');
+            timingInput.type = 'time';
+            timingInput.name = `medications[${medicationId}][times][${i}]`;
+            timingInput.classList.add('form-control');
+
+            timingContainer.appendChild(timingLabel);
+            timingContainer.appendChild(timingInput);
+        }
+    }
+
+
+    function calculateEndDate(medicationId) {
+        const totalPillsInput = document.querySelector(`input[name="medications[${medicationId}][total_pills]"]`);
+        const pillIntakeInput = document.querySelector(`input[name="medications[${medicationId}][pill_intake]"]`);
+        const frequencyInput = document.querySelector(`select[name="medications[${medicationId}][frequency]"]`);
+        const startDateInput = document.querySelector(`input[name="medications[${medicationId}][start_date]"]`);
+        const endDateField = document.getElementById(`end_date_${medicationId}`);
+
+        const totalPills = parseInt(totalPillsInput.value) || 0;
+        const pillIntake = parseInt(pillIntakeInput.value) || 1; // Default to 1 pill per time
+        const frequency = parseInt(frequencyInput.value) || 1;
+        const startDate = new Date(startDateInput.value);
+
+        if (totalPills > 0 && pillIntake > 0 && frequency > 0 && startDateInput.value) {
+            const dosesPerDay = frequency * pillIntake; // Total pills taken per day
+            const daysAvailable = Math.floor(totalPills / dosesPerDay); // Calculate number of days the medication will last
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + daysAvailable);
+
+            endDateField.textContent = `Estimated End Date: ${endDate.toDateString()}`;
+        } else {
+            endDateField.textContent = ''; // Clear if inputs are incomplete
+        }
+    }
+
+
+    function toggleCustomFields(medicationId) {
+    const dropdown = document.querySelector(`select[name="medications[${medicationId}][id]"]`);
+    const customFields = document.getElementById(`customFields_${medicationId}`);
+    
+    if (dropdown.value === 'custom') {
+        customFields.style.display = 'block';
+    } else {
+        customFields.style.display = 'none';
+    }
+}
+
 
     function toggleSections() {
         const role = document.getElementById('role').value;
@@ -529,32 +615,6 @@
         }
     }
 
-    
-    /**
-     * Date of Birth Calculation
-     */
-    // document.getElementById('ic_no').addEventListener('input', function () {
-    //     const icNo = this.value.replace(/-/g, ''); // Remove dashes
-    //     if (icNo.length >= 6) {
-    //         const year = parseInt(icNo.substring(0, 2), 10);
-    //         const month = parseInt(icNo.substring(2, 4), 10);
-    //         const day = parseInt(icNo.substring(4, 6), 10);
-    //         const fullYear = year > new Date().getFullYear() % 100 ? 1900 + year : 2000 + year;
-
-    //         const isValidDate = !isNaN(new Date(`${fullYear}-${month}-${day}`).getTime());
-    //         if (isValidDate && month >= 1 && month <= 12 && day >= 1 && day <= 31) {
-    //             const monthNames = [
-    //                 'January', 'February', 'March', 'April', 'May', 'June',
-    //                 'July', 'August', 'September', 'October', 'November', 'December',
-    //             ];
-    //             document.getElementById('dob').value = `${day} ${monthNames[month - 1]} ${fullYear}`;
-    //         } else {
-    //             document.getElementById('dob').value = ''; // Clear invalid date
-    //         }
-    //     } else {
-    //         document.getElementById('dob').value = ''; // Clear incomplete IC
-    //     }
-    // });
     document.getElementById('ic_no').addEventListener('input', function () {
     const icNo = this.value.replace(/-/g, '');
     if (icNo.length >= 6) {
@@ -647,6 +707,58 @@
         cropper = null;
         profilePhotoInput.value = '';
     });
+
+    document.getElementById('ic_no').addEventListener('input', function() {
+    const icNo = this.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+
+    if (icNo.length >= 12) {
+        const lastDigit = parseInt(icNo.charAt(11), 10); // Get the last digit
+        const genderSelect = document.getElementById('gender');
+
+        // Set gender based on the last digit ONLY if it hasn't been set manually
+        if (genderSelect.value === '' || genderSelect.value === 'Male' || genderSelect.value === 'Female') { 
+            genderSelect.value = lastDigit % 2 === 0 ? 'Female' : 'Male';
+        }
+    }
+});
+document.getElementById('poscode').addEventListener('input', function () {
+    const poscode = this.value.trim(); // Remove leading/trailing spaces
+    const cityField = document.getElementById('city');
+    const stateField = document.getElementById('state');
+
+    // Stop if the postcode is empty or less than 5 digits
+    if (poscode.length < 5) {
+        cityField.value = '';
+        stateField.value = '';
+        return;
+    }
+
+    // Fetch the JSON data
+    fetch('/poscodes')
+        .then(response => response.json())
+        .then(data => {
+            let found = false;
+
+            // Search for the postcode in the JSON
+            data.state.forEach(state => {
+                state.city.forEach(city => {
+                    if (city.postcode.includes(poscode)) {
+                        cityField.value = city.name;
+                        stateField.value = state.name;
+                        found = true;
+                    }
+                });
+            });
+
+            if (!found) {
+                // Clear fields if no match found
+                cityField.value = '';
+                stateField.value = '';
+            }
+        })
+        .catch(error => console.error('Error fetching postcode data:', error));
+});
+
 </script>
 
 <style>

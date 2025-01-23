@@ -19,19 +19,6 @@
         @endif
 
             @csrf
-            <!-- <table class="form-table">
-                <tr>
-                    <td><label for="role">Role:</label></td>
-                    <td>
-                        <select name="role" id="role" class="form-control" disabled>
-                            <option value="1" {{ $user['role'] == 1 ? 'selected' : '' }}>Admin</option>
-                            <option value="2" {{ $user['role'] == 2 ? 'selected' : '' }}>Caregiver</option>
-                            <option value="3" {{ $user['role'] == 3 ? 'selected' : '' }}>Client</option>
-                        </select>
-                    </td>
-                </tr>
-            </table> -->
-
             <!-- Common Sections -->
             <div class="form-container">
                 <h4>Role's Profile</h4>
@@ -103,9 +90,10 @@
                 <input type="text" name="contact_phone_no" id="contact_phone_no" class="form-control" value="{{ $user['emergency_contact']['phone_no'] ?? 'N/A' }}" disabled>
             </div>
 
-        <div class="form-container">
+            @if ($user['role'] == 3)
+                 <div class="form-container">
                 <!-- Medical & Health Information Section -->
-                @if ($user['role'] == 3)
+               
                     <div id="clientSection">
                             <h4>Medical & Health Information</h4>
                             <label for="blood_type">Blood Type:</label>
@@ -151,36 +139,78 @@
                             @endif
                         </div>
                         <div class="form-container">
-                            <label for="medications">Medications:</label>
-                                @if(isset($user['medical_info']['medications']) && is_array($user['medical_info']['medications']))
-                                    <table class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Medication Name</th>
-                                                <th>Purpose</th>
-                                                <th>Dosage</th>
-                                                <th>Frequency</th>
+                        <label for="medications">Medications:</label>
+                        @if(isset($user['medical_info']['medications']) && is_array($user['medical_info']['medications']))
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Medication Name</th>
+                                        <th>Purpose</th>
+                                        <th>Total Pills</th>
+                                        <th>Dosage</th>
+                                        <th>Pill Intake (Per Time)</th>
+                                        <th style="width: 10%;">Times</th>
+                                        <th>Start Date</th>
+                                        <th>Estimated End Date</th>
+                                        <th>Frequency</th>
+                                        <th>Validity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($user['medical_info']['medications'] as $index => $medication)
+                                        @if(!empty($medication['name']) && !empty($medication['use']))
+                                            @php
+                                                $currentDate = time();
+                                                $startDate = isset($medication['start_date']) ? strtotime($medication['start_date']) : null;
+                                                $endDate = isset($medication['end_date']) ? strtotime($medication['end_date']) : null;
+                                                $status = 'N/A';
+                                                $statusColor = '';
+
+                                                if ($endDate && $currentDate > $endDate) {
+                                                    $status = 'Expired';
+                                                    $statusColor = 'red';
+                                                } elseif ($startDate && $endDate && $currentDate >= $startDate && $currentDate <= $endDate) {
+                                                    $status = 'On Going';
+                                                    $statusColor = 'orange';
+                                                } elseif ($startDate && $currentDate < $startDate) {
+                                                    $status = 'Future';
+                                                    $statusColor = 'green';
+                                                }
+                                            @endphp
+                                            <tr style="{{ $status === 'Expired' ? 'background-color: #f9f9f9; color: #999;' : '' }}">
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ $medication['name'] }}</td>
+                                                <td>{{ $medication['use'] }}</td>
+                                                <td>{{ $medication['dosage_info'] }}</td>
+                                                <td>{{ $medication['total_pills'] }}</td>
+                                                <td>{{ $medication['pill_intake'] }}</td>
+                                                <td>
+                                                    @if(isset($medication['times']) && is_array($medication['times']))
+                                                        @foreach($medication['times'] as $time)
+                                                            @php
+                                                                // Convert the time to 12-hour format with AM/PM
+                                                                $formattedTime = date('h:i A', strtotime($time));
+                                                            @endphp
+                                                            <span>{{ $formattedTime }}</span><br>
+                                                        @endforeach
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </td>
+                                                <td>{{ $medication['formatted_start_date'] ?? 'N/A' }}</td>
+                                                <td>{{ $medication['formatted_end_date'] ?? 'N/A' }}</td>
+                                                <td>{{ $medication['frequency'] ?? 'N/A' }}</td>
+                                                <td style="color: {{ $statusColor }};">{{ $status }}</td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($user['medical_info']['medications'] as $index => $medication)
-                                                @if(!empty($medication['name']) && !empty($medication['purpose']))
-                                                    <tr>
-                                                        <td>{{ $index + 1 }}</td>
-                                                        <td>{{ $medication['name'] }}</td>
-                                                        <td>{{ $medication['purpose'] }}</td>
-                                                        <td>{{ $medication['dosage'] ?? 'N/A' }}</td>
-                                                        <td>{{ $medication['frequency'] ?? 'N/A' }}</td>
-                                                    </tr>
-                                                @endif
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                @else
-                                    <p>No medications available.</p>
-                                @endif
-                        </div>
+                                        @endif
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <p>No medications available.</p>
+                        @endif
+                    </div>
                                 <!-- Physical Condition -->
                                 <label for="physical_condition">Physical Condition:</label>
                                 <input type="text" name="physical_condition" id="physical_condition" class="form-control" value="{{ $user['medical_info']['physical_condition'] ?? 'N/A' }}" disabled>
@@ -189,8 +219,9 @@
                                 <label for="basic_needs">Basic Needs:</label>
                                 <input type="text" name="basic_needs" id="basic_needs" class="form-control" value="{{ $user['medical_info']['basic_needs'] ?? 'N/A' }}" disabled>
                     </div>
-                @endif
-        </div>
+            </div>
+        @endif
+      
             
              <!-- List of Clients Section -->
             @if ($user['role'] == 2)
@@ -330,7 +361,7 @@ table {
 
     /* Form Container */
     .form-container {
-        max-width: 800px;
+        max-width: auto;
         margin: 40px auto;
         background: #f8f9fa; /* Light gray background */
         padding: 20px;

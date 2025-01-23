@@ -142,7 +142,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <th>Cost:</th>
+                    <th>Cost: RM</th>
                     <td>
                         <input type="number" name="cost" class="form-control" required>
                     </td>

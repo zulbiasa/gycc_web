@@ -38,7 +38,7 @@ class ServiceController extends Controller
             'username' => $userData['username'] ?? 'Guest',
             'name' => $userData['name'] ?? 'Unknown',
         ]);
-
+    
         $imageUrl = $this->storage->getImage($userId);
     
         try {
@@ -49,7 +49,6 @@ class ServiceController extends Controller
     
             // Process services
             foreach ($services as $key => $service) {
-                // Ensure the service has a valid ID and is complete
                 if (!isset($key) || empty($service['service'])) {
                     continue;
                 }
@@ -68,14 +67,12 @@ class ServiceController extends Controller
     
                 $filteredServices[] = $service;
             }
-
-              // Sort services alphabetically by name and prioritize active services
+    
+            // Sort services alphabetically by name and prioritize active services
             usort($filteredServices, function ($a, $b) {
-                // Sort active above inactive
                 if ($a['status'] !== $b['status']) {
                     return $a['status'] ? -1 : 1;
                 }
-                // If status is the same, sort alphabetically by service name
                 return strcasecmp($a['service'], $b['service']);
             });
     
@@ -94,6 +91,13 @@ class ServiceController extends Controller
             $selectedService = $request->query('service', null);
             $selectedCategory = $request->query('category', null);
             $selectedStatus = $request->query('status', null);
+            $searchFilter = $request->query('searchFilter', null);
+    
+            if (!empty($searchFilter)) {
+                $filteredServices = array_filter($filteredServices, function ($service) use ($searchFilter) {
+                    return stripos($service['service'], $searchFilter) !== false;
+                });
+            }
     
             if ($searchBy === 'service' && $selectedService) {
                 $filteredServices = array_filter($filteredServices, function ($service) use ($selectedService) {
@@ -113,7 +117,7 @@ class ServiceController extends Controller
                 });
             }
     
-            return view('services.viewServices', [
+            return response()->view('services.viewServices', [
                 'services' => $filteredServices,
                 'serviceCategories' => $normalizedCategories,
                 'imageUrl' => $imageUrl,
@@ -124,12 +128,16 @@ class ServiceController extends Controller
                 'selectedCategory' => $selectedCategory,
                 'selectedStatus' => $selectedStatus,
                 'searchBy' => $searchBy,
-            ]);
+                'searchFilter' => $searchFilter, // Pass searchFilter to the view
+            ])->header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     
         } catch (\Exception $e) {
             return back()->with('error', 'Failed to fetch services: ' . $e->getMessage());
         }
     }
+    
     
 
     public function edit($id)

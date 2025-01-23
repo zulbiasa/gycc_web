@@ -75,6 +75,32 @@
         .modal-content {
             border-radius: 10px;
         }
+
+        .password-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#password {
+    width: 100%;
+    padding-right: 40px; /* Space for the eye icon */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888; /* Icon color */
+}
+
+.toggle-password:hover {
+    color: #000; /* Change color on hover */
+}
+
+
     </style>
 </head>
 <body>
@@ -94,11 +120,17 @@
                     @enderror
                 </div>
 
-                <!-- Password Input -->
-                <div class="mb-3 text-start">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
+                <!-- Password Input with Toggle -->
+<div class="mb-3 text-start">
+    <label for="password" class="form-label">Password</label>
+    <div class="password-container">
+        <input type="password" class="form-control" id="password" name="password" required>
+        <span class="toggle-password" onclick="togglePassword()">
+            <i id="eye-icon" class="fas fa-eye"></i>
+        </span>
+    </div>
+</div>
+
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-primary w-100">Sign In</button>
@@ -145,7 +177,25 @@
 
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <script>
+        function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const eyeIcon = document.getElementById('eye-icon');
+
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.classList.remove('fa-eye');
+        eyeIcon.classList.add('fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        eyeIcon.classList.remove('fa-eye-slash');
+        eyeIcon.classList.add('fa-eye');
+    }
+}
+
+
+
         function openEmail(provider) {
             let email = "ainasfea0@gmail.com";
             let subject = "GYCC+ Support Request - Assistance Needed";

@@ -250,10 +250,10 @@ select {
                                 <!-- Client Name -->
                                 <div class="d-flex align-items-center mb-3">
                                     <p class="mb-0 me-3" style="width: 150px;">Client Name</p>
-                                    <select class="form-select" id="client_name" name="client_name" style="width: 500px;" required>
+                                    <select class="form-select" id="clientId" name="client_name" style="width: 500px;" required>
                                         <option value="" disabled selected>Select Client Name</option>
                                         @foreach ($clients as $key => $user)
-                                            <option value="{{ $key }}">{{ $user['name'] ?? 'Unknown' }}</option>
+                                            <option value="{{ $key }}" >{{ $user['name'] ?? 'Unknown' }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -277,7 +277,7 @@ select {
                                 <!-- End Date -->
                                 <div class="d-flex align-items-center mb-3">
                                     <p class="mb-0 me-3" style="width: 150px;">End Date</p>
-                                    <input type="date" class="form-control" name="end_date" id="end_date" placeholder="end_date" style="width: 500px" required readonly>
+                                    <input type="date" class="form-control" name="end_date" id="end_date" placeholder="end_date" style="width: 500px" required>
                                 </div>
 
                                 <!-- Caregiver Name -->
@@ -286,7 +286,7 @@ select {
                                     <input type="text" class="form-control" placeholder="{{ $name }}" style="width: 500px" readonly>
 
                                     <!-- Hidden input to hold the actual value of $userId -->
-                                    <input type="hidden" name="caregiver_name" value="{{ $userId }}">
+                                    <input type="hidden" name="caregiver_name" id="caregiverId" value="{{ $userId }}">
 
                                 </div>                                
                             
@@ -327,8 +327,8 @@ select {
                                             <th>Service</th>
                                             <th>Description</th>
                                             <th>Frequency</th>
-                                            <th>Cost per Session</th>
-                                            <th>Subtotal Cost</th>
+                                            <th>Unit price</th>
+                                            <th>Subunit price</th>
                                             <th style="display: none;">Service ID</th>
                                             <th>Action</th>
                                         </tr>
@@ -366,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const tableBody = serviceTable.querySelector('tbody');
     const totalCostDiv = document.getElementById('totalCost');
     const totalCostValue = document.getElementById('totalCostValue');
+    
     let totalCost = 0; // Total cost tracker
     let rowCount = 0;  // Row counter
 
@@ -397,9 +398,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const frequencyDropdown = `
                 <select class="form-select frequency-select" required>
                     <option value="" disabled selected>Select Frequency</option>
-                    <option value="365">Daily</option>
-                    <option value="52">Weekly</option>
-                    <option value="12">Monthly</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
                 </select>
             `;
 
@@ -414,13 +415,39 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td><button class="btn btn-danger btn-sm remove-btn">X</button></td>
             `;
 
-            // Add event listener for frequency change
+            // Add event listener for frequency change HERE
             const frequencySelect = row.querySelector('.frequency-select');
             const subtotalCostCell = row.querySelector('.subtotal-cost');
+
             frequencySelect.addEventListener('change', function () {
-                const frequencyValue = parseInt(this.value, 10);
-                const subtotalCost = costPerSession * frequencyValue;
+                const frequencyValue = this.value;
+                const startDate = new Date(document.querySelector('input[name="start_date"]').value);
+                const endDate = new Date(document.querySelector('input[name="end_date"]').value);
+
+                if (isNaN(startDate) || isNaN(endDate)) {
+                    alert("Please select valid start and end dates before selecting a frequency.");
+                    return;
+                }
+
+                // Calculate session count
+                let sessionCount = 0;
+                if (frequencyValue === 'daily') {
+                    const oneDay = 1000 * 60 * 60 * 24;
+                    sessionCount = Math.ceil((endDate - startDate) / oneDay);
+                } else if (frequencyValue === 'weekly') {
+                    const oneWeek = 1000 * 60 * 60 * 24 * 7;
+                    sessionCount = Math.ceil((endDate - startDate) / oneWeek);
+                } else if (frequencyValue === 'monthly') {
+                    const startMonth = startDate.getFullYear() * 12 + startDate.getMonth();
+                    const endMonth = endDate.getFullYear() * 12 + endDate.getMonth();
+                    sessionCount = endMonth - startMonth;
+                }
+
+                // Calculate and display subtotal cost
+                const subtotalCost = costPerSession * sessionCount;
                 subtotalCostCell.textContent = `RM${subtotalCost.toFixed(2)}`;
+
+                // Update total cost
                 updateTotalCost();
             });
 
@@ -471,8 +498,8 @@ document.addEventListener('DOMContentLoaded', function () {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const caregiverId = document.querySelector('input[name="caregiver_name"]').value;
-            const clientId = document.querySelector('select[name="client_name"]').value;
+            const caregiverId = document.getElementById('caregiverId').value;
+            const clientId = document.getElementById('clientId').value;
             const careType = document.querySelector('select[name="care_type"]').value;
             const startDate = document.querySelector('input[name="start_date"]').value;
             const endDate = document.querySelector('input[name="end_date"]').value;
@@ -480,15 +507,46 @@ document.addEventListener('DOMContentLoaded', function () {
             const servicesData = [];
             tableBody.querySelectorAll('tr').forEach((row, index) => {
                 const serviceId = row.querySelector('.service-id').textContent;
-                const frequency = row.querySelector('.frequency-select').value;
+                const frequencyValue = row.querySelector('.frequency-select').value;
+
+                // Parse start and end dates as Date objects
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(endDate);
+
+                // Validate that the dates are valid
+                if (isNaN(startDateObj) || isNaN(endDateObj)) {
+                    console.error("Invalid start or end date.");
+                    return;
+                }
+
+                // Calculate sessions
+                let sessionCount = 0;
+                if (frequencyValue === 'daily') {
+                    const oneDay = 1000 * 60 * 60 * 24;
+                    sessionCount = Math.ceil((endDateObj - startDateObj) / oneDay) + 1; // Include both start and end date
+                } else if (frequencyValue === 'weekly') {
+                    const oneWeek = 1000 * 60 * 60 * 24 * 7;
+                    sessionCount = Math.ceil((endDateObj - startDateObj) / oneWeek);
+                } else if (frequencyValue === 'monthly') {
+                    const startMonth = startDateObj.getFullYear() * 12 + startDateObj.getMonth();
+                    const endMonth = endDateObj.getFullYear() * 12 + endDateObj.getMonth();
+                    sessionCount = endMonth - startMonth + 1; // Include both start and end month
+                }
+
                 servicesData.push({
                     serviceId: serviceId,
-                    frequency: frequency
+                    frequency: frequencyValue,
+                    total_session: sessionCount,
+                    start_date: startDate,
+                    end_date: endDate,
                 });
             });
 
             const totalCost = parseFloat(totalCostValue.textContent);
-
+            if (!caregiverId || !clientId) {
+                alert("Caregiver ID and Client ID are required!");
+                return;
+            }
             // Send the data to the controller
             fetch('/register-care-plan', {
                 method: 'POST',

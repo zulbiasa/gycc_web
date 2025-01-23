@@ -11,21 +11,20 @@ class StorageService
     public function __construct()
     {
         // Fetch Firebase Storage image
-    $factory = (new Factory)
-    ->withServiceAccount([
-        'type' => 'service_account',
-        'project_id' => env('FIREBASE_PROJECT_ID'),
-        'private_key_id' => env('FIREBASE_PRIVATE_KEY_ID'),
-        'private_key' => str_replace('\n', "\n", env('FIREBASE_PRIVATE_KEY')),
-        'client_email' => env('FIREBASE_CLIENT_EMAIL'),
-        'client_id' => env('FIREBASE_CLIENT_ID'),
-        'auth_uri' => env('FIREBASE_AUTH_URI'),
-        'token_uri' => env('FIREBASE_TOKEN_URI'),
-        'auth_provider_x509_cert_url' => env('FIREBASE_AUTH_PROVIDER_X509_CERT_URL'),
-        'client_x509_cert_url' => env('FIREBASE_CLIENT_X509_CERT_URL'),
-        'universe_domain'=> env('FIREBASE_UNIVERSE_DOMAIN'),
-    ]);
-
+        $factory = (new Factory)
+        ->withServiceAccount([
+            'type' => 'service_account',
+            'project_id' => env('FIREBASE_PROJECT_ID'),
+            'private_key_id' => env('FIREBASE_PRIVATE_KEY_ID'),
+            'private_key' => str_replace('\n', "\n", env('FIREBASE_PRIVATE_KEY')),
+            'client_email' => env('FIREBASE_CLIENT_EMAIL'),
+            'client_id' => env('FIREBASE_CLIENT_ID'),
+            'auth_uri' => env('FIREBASE_AUTH_URI'),
+            'token_uri' => env('FIREBASE_TOKEN_URI'),
+            'auth_provider_x509_cert_url' => env('FIREBASE_AUTH_PROVIDER_X509_CERT_URL'),
+            'client_x509_cert_url' => env('FIREBASE_CLIENT_X509_CERT_URL'),
+            'universe_domain'=> env('FIREBASE_UNIVERSE_DOMAIN'),
+        ]);
     $storage = $factory->createStorage();
     $bucket = $storage->getBucket(env('FIREBASE_STORAGE_BUCKET'));
 

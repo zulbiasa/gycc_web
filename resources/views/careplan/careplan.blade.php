@@ -210,15 +210,15 @@
             <a href="{{ route('careplan.index', ['view' => isset($view) && $view === 'history' ? 'active' : 'history']) }}" 
                 class="btn"
                 style="
-                    background-color: {{ isset($view) && $view === 'history' ? '#ffcc80' : '#c8e6c9' }};
-                    color: {{ isset($view) && $view === 'history' ? '#6d4c41' : '#2e7d32' }};
+                    background-color: {{ isset($view) && $view === 'history' ?  '#c8e6c9' : '#ffcc80' }};
+                    color: {{ isset($view) && $view === 'history' ?  '#2e7d32' : '#6d4c41'}};
                     font-weight: bold; 
                     border: none; 
                     padding: 10px 20px; 
                     text-transform: uppercase; 
                     transition: all 0.3s ease;"
-                onmouseover="this.style.backgroundColor='{{ isset($view) && $view === 'history' ? '#ffb74d' : '#a5d6a7' }}'; this.style.color='#000';"
-                onmouseout="this.style.backgroundColor='{{ isset($view) && $view === 'history' ? '#ffcc80' : '#c8e6c9' }}'; this.style.color='{{ isset($view) && $view === 'history' ? '#6d4c41' : '#2e7d32' }}';">
+                onmouseover="this.style.backgroundColor='{{ isset($view) && $view === 'history' ?  '#a5d6a7': '#ffb74d' }}'; this.style.color='#000';"
+                onmouseout="this.style.backgroundColor='{{ isset($view) && $view === 'history' ? '#c8e6c9' : '#ffcc80' }}'; this.style.color='{{ isset($view) && $view === 'history' ? '#2e7d32' : '#6d4c41' }}';">
                     {{ isset($view) && $view === 'history' ? 'View Care Plan' : 'Care Plan History' }}
             </a>
         </div>
@@ -255,20 +255,11 @@
                         </td>
                         <td>{{ $plan['totalServices'] }}</td>
                         <td>{{ $plan['caregiverName'] }}</td>
-                        <td>
+                        <td style="text-align: center;">
                             <a href="{{ route('careplan.editCaregiver', [$plan['userId'], $plan['planId']]) }}" class="action-btn" title="View Care Plan">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <!-- <a href="{{ route('careplan.editCaregiver', [$plan['userId'], $plan['planId']]) }}" class="action-btn" title="Edit Caregiver">
                                 <i class="fas fa-edit"></i>
-                            </a> -->
-                            <form action="{{ route('careplan.editCaregiver', [$plan['userId'], $plan['planId']]) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="action-btn delete" title="Delete Care Plan" onclick="return confirm('Are you sure you want to delete this care plan?')">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
+                            </a>
+               
                         </td>
 
                     </tr>
